@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>OpenCL初探:向量相加(C) | Gameeer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="keywords" content="读书, 技术, 生活">
+  <meta name="description" content="下文记录了向量相加实例代码,运行结果如下图：
+此外推荐一些参考资料:
+
+OpenCL Reference Pages:https://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/
+OpenCL API 1.2 Reference Card:https://www.khronos.org/files/opencl-1-2-quick-refe">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenCL初探:向量相加(C)">
+<meta property="og:url" content="http://gameeer.com/2015/01/10/opencl-vecadd-c/index.html">
+<meta property="og:site_name" content="Gameeer">
+<meta property="og:description" content="下文记录了向量相加实例代码,运行结果如下图：
+此外推荐一些参考资料:
+
+OpenCL Reference Pages:https://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/
+OpenCL API 1.2 Reference Card:https://www.khronos.org/files/opencl-1-2-quick-refe">
+<meta property="og:image" content="/images/vecadd_c_result.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OpenCL初探:向量相加(C)">
+<meta name="twitter:description" content="下文记录了向量相加实例代码,运行结果如下图：
+此外推荐一些参考资料:
+
+OpenCL Reference Pages:https://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/
+OpenCL API 1.2 Reference Card:https://www.khronos.org/files/opencl-1-2-quick-refe">
+  
+    <link rel="alternative" href="/atom.xml" title="Gameeer" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="http://fonts.useso.com/css?family=Ubuntu" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+  
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F37f8b397ebb26e9f267824b070e496fa' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Gameeer</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">停下来就输了。</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="sub-nav">
+        
+          <a id="nav-home-icon" class="nav-icon" href="/"></a>
+        
+          <a id="nav-archives-icon" class="nav-icon" href="/archives"></a>
+        
+          <a id="nav-about-icon" class="nav-icon" href="/about"></a>
+        
+          <a id="nav-links-icon" class="nav-icon" href="/links"></a>
+        
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+      </nav>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-opencl-vecadd-c" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      OpenCL初探:向量相加(C)
+    </h1>
+  
+
+      </header>
+    
+    <time class="article-date" datetime="2015-01-10T08:42:39.000Z" itemprop="datePublished">01-10-2015</time>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/开发/">开发</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>
+
+</p><p>下文记录了<strong>向量相加</strong>实例代码,运行结果如下图：<br><img src="/images/vecadd_c_result.png" alt=""></p>
+<p>此外推荐一些参考资料:</p>
+<ul>
+<li>OpenCL Reference Pages:<a href="https://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/" target="_blank" rel="external">https://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/</a></li>
+<li>OpenCL API 1.2 Reference Card:<a href="https://www.khronos.org/files/opencl-1-2-quick-reference-card.pdf" target="_blank" rel="external">https://www.khronos.org/files/opencl-1-2-quick-reference-card.pdf</a></li>
+<li>OpenCL 2.0 Reference:<a href="https://www.khronos.org/files/opencl20-quick-reference-card.pdf" target="_blank" rel="external">https://www.khronos.org/files/opencl20-quick-reference-card.pdf</a></li>
+</ul>
+<a id="more"></a>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#include <span class="title">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="preprocessor">#include <span class="title">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="preprocessor">#include <span class="title">&lt;CL/cl.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span>* programSource =</span><br><span class="line">	<span class="string">"__kernel					\n"</span></span><br><span class="line">	<span class="string">"void vecadd(__global int *A,			\n"</span></span><br><span class="line">	<span class="string">"	     __global int *B,			\n"</span></span><br><span class="line">	<span class="string">"	     __global int *C)			\n"</span></span><br><span class="line">	<span class="string">"&#123;			 	      		\n"</span></span><br><span class="line">	<span class="string">"						\n"</span></span><br><span class="line">	<span class="string">"	int idx = get_global_id(0);		\n"</span></span><br><span class="line">	<span class="string">"						\n"</span></span><br><span class="line">	<span class="string">"	C[idx] = A[idx] + B[idx];		\n"</span></span><br><span class="line">	<span class="string">"&#125;						\n"</span></span><br><span class="line">	;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> main()&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//主机数据</span></span><br><span class="line">	<span class="keyword">int</span> *A = <span class="literal">NULL</span>;</span><br><span class="line">	<span class="keyword">int</span> *B = <span class="literal">NULL</span>;</span><br><span class="line">	<span class="keyword">int</span> *C = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//数组里的元素个数</span></span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">int</span> elements = <span class="number">2048</span>;</span><br><span class="line">	<span class="comment">//计算数据宽度</span></span><br><span class="line">	size_t datasize = <span class="keyword">sizeof</span>(<span class="keyword">int</span>)*elements;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//为输入输出数据分配空间</span></span><br><span class="line">	A = (<span class="keyword">int</span> *)malloc(datasize);</span><br><span class="line">	B = (<span class="keyword">int</span> *)malloc(datasize);</span><br><span class="line">	C = (<span class="keyword">int</span> *)malloc(datasize);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//初始化输入数据</span></span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>;i&lt;elements;i++)</span><br><span class="line">	&#123;</span><br><span class="line">		A[i] = i;</span><br><span class="line">		B[i] = i;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	cl_int status;</span><br><span class="line">	<span class="comment">//平台数</span></span><br><span class="line">	cl_uint numPlatforms = <span class="number">0</span>;</span><br><span class="line">	status = clGetPlatformIDs(<span class="number">0</span>,<span class="literal">NULL</span>,&amp;numPlatforms);</span><br><span class="line">	<span class="comment">//为每一个平台分配足够空间</span></span><br><span class="line">	cl_platform_id* platforms = <span class="literal">NULL</span>;</span><br><span class="line">	platforms = (cl_platform_id*)malloc(numPlatforms*<span class="keyword">sizeof</span>(cl_platform_id));</span><br><span class="line">	<span class="comment">//获取平台ID</span></span><br><span class="line">	status = clGetPlatformIDs(numPlatforms,platforms,<span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//检索设备数</span></span><br><span class="line">	cl_uint numDevices = <span class="number">0</span>;</span><br><span class="line">	status = clGetDeviceIDs(platforms[<span class="number">0</span>],CL_DEVICE_TYPE_ALL,<span class="number">0</span>,<span class="literal">NULL</span>,&amp;numDevices);</span><br><span class="line">	<span class="comment">//为每一个设备分配足够空间</span></span><br><span class="line">	cl_device_id* devices;</span><br><span class="line">	devices = (cl_device_id*)malloc(numDevices*<span class="keyword">sizeof</span>(cl_device_id));</span><br><span class="line">	<span class="comment">//获取设备ID</span></span><br><span class="line">	status = clGetDeviceIDs(platforms[<span class="number">0</span>],CL_DEVICE_TYPE_ALL,numDevices,devices,<span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//新建上下文</span></span><br><span class="line">	cl_context context;</span><br><span class="line">	context = clCreateContext(<span class="literal">NULL</span>,numDevices,devices,<span class="literal">NULL</span>,<span class="literal">NULL</span>,&amp;status);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//创建命令队列</span></span><br><span class="line">	cl_command_queue cmdQueue;</span><br><span class="line">	cmdQueue = clCreateCommandQueue(context,devices[<span class="number">0</span>],<span class="number">0</span>,&amp;status);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//创建设备缓存</span></span><br><span class="line">	cl_mem bufA;</span><br><span class="line">	bufA = clCreateBuffer(context,CL_MEM_READ_ONLY,datasize,<span class="literal">NULL</span>,&amp;status);</span><br><span class="line">	cl_mem bufB;</span><br><span class="line">	bufB = clCreateBuffer(context,CL_MEM_READ_ONLY,datasize,<span class="literal">NULL</span>,&amp;status);</span><br><span class="line">	cl_mem bufC;</span><br><span class="line">	bufC = clCreateBuffer(context,CL_MEM_READ_ONLY,datasize,<span class="literal">NULL</span>,&amp;status);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//将数组中数据写入设备缓存</span></span><br><span class="line">	status = clEnqueueWriteBuffer(cmdQueue,bufA,CL_FALSE,<span class="number">0</span>,datasize,A,<span class="number">0</span>,<span class="literal">NULL</span>,<span class="literal">NULL</span>);</span><br><span class="line">	status = clEnqueueWriteBuffer(cmdQueue,bufB,CL_FALSE,<span class="number">0</span>,datasize,B,<span class="number">0</span>,<span class="literal">NULL</span>,<span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//创建程序</span></span><br><span class="line">	cl_program program = clCreateProgramWithSource(context,<span class="number">1</span>,(<span class="keyword">const</span> <span class="keyword">char</span>**)&amp;programSource,<span class="literal">NULL</span>,&amp;status);</span><br><span class="line">	<span class="comment">//为设备编译程序</span></span><br><span class="line">	status = clBuildProgram(program,numDevices,devices,<span class="literal">NULL</span>,<span class="literal">NULL</span>,<span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	cl_kernel kernel = clCreateKernel(program,<span class="string">"vecadd"</span>,&amp;status);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//设置内核参数</span></span><br><span class="line">	status = clSetKernelArg(kernel,<span class="number">0</span>,<span class="keyword">sizeof</span>(cl_mem),&amp;bufA);</span><br><span class="line">	status = clSetKernelArg(kernel,<span class="number">1</span>,<span class="keyword">sizeof</span>(cl_mem),&amp;bufB);</span><br><span class="line">	status = clSetKernelArg(kernel,<span class="number">2</span>,<span class="keyword">sizeof</span>(cl_mem),&amp;bufC);</span><br><span class="line"></span><br><span class="line">	size_t globalWorkSize[<span class="number">1</span>];</span><br><span class="line">	globalWorkSize[<span class="number">0</span>] = elements;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//执行内核</span></span><br><span class="line">	status = clEnqueueNDRangeKernel(cmdQueue,kernel,<span class="number">1</span>,<span class="literal">NULL</span>,globalWorkSize,<span class="literal">NULL</span>,<span class="number">0</span>,<span class="literal">NULL</span>,<span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//从设备缓存读取数据</span></span><br><span class="line">	clEnqueueReadBuffer(cmdQueue,bufC,CL_TRUE,<span class="number">0</span>,datasize,C,<span class="number">0</span>,<span class="literal">NULL</span>,<span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> result = <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>;i&lt;elements;i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (C[i] != i+i)</span><br><span class="line">		&#123;</span><br><span class="line">			result = <span class="number">0</span>;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (result)</span><br><span class="line">	&#123;</span><br><span class="line">		printf(<span class="string">"Output is correct\n"</span>);</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		printf(<span class="string">"Output is incorrect\n"</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//释放OpenCL资源</span></span><br><span class="line">	clReleaseKernel(kernel);</span><br><span class="line">	clReleaseProgram(program);</span><br><span class="line">	clReleaseCommandQueue(cmdQueue);</span><br><span class="line">	clReleaseMemObject(bufA);</span><br><span class="line">	clReleaseMemObject(bufB);</span><br><span class="line">	clReleaseMemObject(bufC);</span><br><span class="line">	clReleaseContext(context);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//释放主机资源</span></span><br><span class="line">	free(A);</span><br><span class="line">	free(B);</span><br><span class="line">	free(C);</span><br><span class="line">	free(platforms);</span><br><span class="line">	free(devices);</span><br><span class="line">	system(<span class="string">"pause"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <!-- <a data-url="http://gameeer.com/2015/01/10/opencl-vecadd-c/" data-id="ci78m04q6000zbmzfwawe9hdr" class="article-share-link">Share</a> -->
+      
+        <a href="http://gameeer.com/2015/01/10/opencl-vecadd-c/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenCL/">OpenCL</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/01/11/opencl-vecadd-cpp/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          OpenCL初探:向量相加(C++)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/01/09/opencl-envi/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">OpenCL初探:环境搭建</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+<div id="disqus_thread" >
+<div class="ds-thread" data-thread-key="2015/01/10/opencl-vecadd-c/" data-title="OpenCL初探:向量相加(C)" data-url="http://gameeer.com/2015/01/10/opencl-vecadd-c/">
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"gameeer"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- 多说公共JS代码 end -->
+</div>
+</div>
+</section>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 <a href="https://github.com/cuit-zhaxin/hexo-theme-athena" target="_blank">Athena
+</a> improved by <a href="http://gameeer.com/">Gameeer</a> | Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> | 蜀ICP备14005212号-2
+    </div>
+  </div>
+</footer>
+    </div>
+    <script src="http://ajax.useso.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+<!-- http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js-->
+
+  </div>
+</body>
+</html>

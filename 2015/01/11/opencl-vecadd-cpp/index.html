@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>OpenCL初探:向量相加(C++) | Gameeer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="keywords" content="读书, 技术, 生活">
+  <meta name="description" content="编码期间遇到问题了，当设备类型为CL_DEVICE_TYPE_GPU时捕获错误如下:将设备类型改为CL_DEVICE_TYPE_CPU或者CL_DEVICE_TYPE_ALL 不报错,此说明获取GPU设备ID失败。
+解决办法:笔者安装了Intel OpenCL SDK后打开笔记本的独立显卡，搞定。
+正确运行结果如下：
+下文是使用C++封装API实现向量相加的源码:首先需得下载 cl.hpp 文件，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenCL初探:向量相加(C++)">
+<meta property="og:url" content="http://gameeer.com/2015/01/11/opencl-vecadd-cpp/index.html">
+<meta property="og:site_name" content="Gameeer">
+<meta property="og:description" content="编码期间遇到问题了，当设备类型为CL_DEVICE_TYPE_GPU时捕获错误如下:将设备类型改为CL_DEVICE_TYPE_CPU或者CL_DEVICE_TYPE_ALL 不报错,此说明获取GPU设备ID失败。
+解决办法:笔者安装了Intel OpenCL SDK后打开笔记本的独立显卡，搞定。
+正确运行结果如下：
+下文是使用C++封装API实现向量相加的源码:首先需得下载 cl.hpp 文件，">
+<meta property="og:image" content="/images/vecadd_cpp_err1.png">
+<meta property="og:image" content="/images/vecadd_cpp_result.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OpenCL初探:向量相加(C++)">
+<meta name="twitter:description" content="编码期间遇到问题了，当设备类型为CL_DEVICE_TYPE_GPU时捕获错误如下:将设备类型改为CL_DEVICE_TYPE_CPU或者CL_DEVICE_TYPE_ALL 不报错,此说明获取GPU设备ID失败。
+解决办法:笔者安装了Intel OpenCL SDK后打开笔记本的独立显卡，搞定。
+正确运行结果如下：
+下文是使用C++封装API实现向量相加的源码:首先需得下载 cl.hpp 文件，">
+  
+    <link rel="alternative" href="/atom.xml" title="Gameeer" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="http://fonts.useso.com/css?family=Ubuntu" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+  
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F37f8b397ebb26e9f267824b070e496fa' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Gameeer</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">停下来就输了。</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="sub-nav">
+        
+          <a id="nav-home-icon" class="nav-icon" href="/"></a>
+        
+          <a id="nav-archives-icon" class="nav-icon" href="/archives"></a>
+        
+          <a id="nav-about-icon" class="nav-icon" href="/about"></a>
+        
+          <a id="nav-links-icon" class="nav-icon" href="/links"></a>
+        
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+      </nav>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-opencl-vecadd-cpp" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      OpenCL初探:向量相加(C++)
+    </h1>
+  
+
+      </header>
+    
+    <time class="article-date" datetime="2015-01-11T03:12:23.000Z" itemprop="datePublished">01-11-2015</time>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/开发/">开发</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>
+
+</p><p>编码期间遇到问题了，<br>当设备类型为<strong>CL_DEVICE_TYPE_GPU</strong>时捕获错误如下:<br><img src="/images/vecadd_cpp_err1.png" alt=""><br>将设备类型改为<strong>CL_DEVICE_TYPE_CPU</strong>或者<strong>CL_DEVICE_TYPE_ALL</strong> 不报错,此说明获取GPU设备ID失败。</p>
+<p><strong>解决办法</strong>:笔者安装了Intel OpenCL SDK后打开笔记本的独立显卡，搞定。</p>
+<p>正确运行结果如下：<br><img src="/images/vecadd_cpp_result.png" alt=""></p>
+<p>下文是<strong>使用C++封装API实现向量相加</strong>的源码:<br>首先需得下载 cl.hpp 文件，下载地址:<a href="https://www.khronos.org/registry/cl/" target="_blank" rel="external">https://www.khronos.org/registry/cl/</a><br><a id="more"></a></p>
+<p>项目根目录下创建文件<strong>vector_add_kernel.cl</strong>，存放如下代码:<br><figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">__kernel void vecadd(__<span class="built_in">global</span> <span class="keyword">int</span> *A,</span><br><span class="line">					 __<span class="built_in">global</span> <span class="keyword">int</span> *B,</span><br><span class="line">					 __<span class="built_in">global</span> <span class="keyword">int</span> *C)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">int</span> idx = get_global_id(<span class="number">0</span>)<span class="comment">;</span></span><br><span class="line">	C[idx] = A[idx] + B[idx]<span class="comment">;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>主机代码<strong>VectorsAdd.cpp</strong>如下:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">define</span> __CL_ENABLE_EXCEPTIONS</span></span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;CL/cl.hpp&gt;</span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;iostream&gt;</span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;fstream&gt;</span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;string&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">int</span> N_ELEMENTS = <span class="number">1024</span>;</span><br><span class="line">	<span class="keyword">int</span>* A = <span class="keyword">new</span> <span class="keyword">int</span>[N_ELEMENTS];</span><br><span class="line">	<span class="keyword">int</span>* B = <span class="keyword">new</span> <span class="keyword">int</span>[N_ELEMENTS];</span><br><span class="line">	<span class="keyword">int</span>* C = <span class="keyword">new</span> <span class="keyword">int</span>[N_ELEMENTS];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;N_ELEMENTS;i++)</span><br><span class="line">	&#123;</span><br><span class="line">		A[i] = i;</span><br><span class="line">		B[i] = i;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">try</span>&#123;</span><br><span class="line">		std::<span class="stl_container"><span class="built_in">vector</span>&lt;cl::Platform&gt;</span> platforms;</span><br><span class="line">		cl::Platform::get(&amp;platforms);</span><br><span class="line"></span><br><span class="line">		std::<span class="stl_container"><span class="built_in">vector</span>&lt;cl::Device&gt;</span> devices;</span><br><span class="line">		platforms[<span class="number">0</span>].getDevices(CL_DEVICE_TYPE_GPU,&amp;devices);</span><br><span class="line"></span><br><span class="line">		cl::<span class="function">Context <span class="title">context</span><span class="params">(devices)</span></span>;</span><br><span class="line">		cl::CommandQueue <span class="built_in">queue</span> = cl::CommandQueue(context,devices[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">		cl::Buffer bufferA = cl::Buffer(context,CL_MEM_READ_ONLY,N_ELEMENTS*<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">		cl::Buffer bufferB = cl::Buffer(context,CL_MEM_READ_ONLY,N_ELEMENTS*<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">		cl::Buffer bufferC = cl::Buffer(context,CL_MEM_WRITE_ONLY,N_ELEMENTS*<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">		</span><br><span class="line">		<span class="built_in">queue</span>.enqueueWriteBuffer(bufferA, CL_TRUE, <span class="number">0</span>, N_ELEMENTS*<span class="keyword">sizeof</span>(<span class="keyword">int</span>), A);</span><br><span class="line">		<span class="built_in">queue</span>.enqueueWriteBuffer(bufferB, CL_TRUE, <span class="number">0</span>, N_ELEMENTS*<span class="keyword">sizeof</span>(<span class="keyword">int</span>), B);</span><br><span class="line"></span><br><span class="line">		std::<span class="function">ifstream <span class="title">sourceFile</span><span class="params">("vector_add_kernel.cl")</span></span>;</span><br><span class="line">		std::<span class="function"><span class="built_in">string</span> <span class="title">sourceCode</span><span class="params">(<span class="built_in">std</span>::istreambuf_iterator&lt;<span class="keyword">char</span>&gt;(sourceFile)</span>,<span class="params">(<span class="built_in">std</span>::istreambuf_iterator&lt;<span class="keyword">char</span>&gt;()</span>))</span>;</span><br><span class="line">		cl::Program::<span class="function">Sources <span class="title">source</span><span class="params">(1,<span class="built_in">std</span>::make_pair(sourceCode.c_str()</span>,sourceCode.<span class="title">length</span><span class="params">()</span>+1))</span>;</span><br><span class="line">		cl::Program program = cl::Program(context,source);</span><br><span class="line">		program.build(devices);</span><br><span class="line"></span><br><span class="line">		cl::<span class="function">Kernel <span class="title">vecadd_kernel</span><span class="params">(program,"vecadd")</span></span>;</span><br><span class="line">		vecadd_kernel.setArg(<span class="number">0</span>,bufferA);</span><br><span class="line">		vecadd_kernel.setArg(<span class="number">1</span>,bufferB);</span><br><span class="line">		vecadd_kernel.setArg(<span class="number">2</span>,bufferC);</span><br><span class="line">		cl::<span class="function">NDRange <span class="title">global</span><span class="params">(N_ELEMENTS)</span></span>;</span><br><span class="line">		cl::<span class="function">NDRange <span class="title">local</span><span class="params">(256)</span></span>;</span><br><span class="line">		<span class="built_in">queue</span>.enqueueNDRangeKernel(vecadd_kernel,cl::NullRange,global,local);</span><br><span class="line"></span><br><span class="line">		<span class="built_in">queue</span>.enqueueReadBuffer(bufferC,CL_TRUE,<span class="number">0</span>,N_ELEMENTS*<span class="keyword">sizeof</span>(<span class="keyword">int</span>),C);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">bool</span> result = <span class="keyword">true</span>;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;N_ELEMENTS;i++)</span><br><span class="line">		&#123;</span><br><span class="line">			std::<span class="built_in">cout</span> &lt;&lt; C[i] &lt;&lt; <span class="string">"="</span> &lt;&lt; A[i] &lt;&lt; <span class="string">"+"</span> &lt;&lt; B[i] &lt;&lt; <span class="string">" "</span>;</span><br><span class="line">			<span class="keyword">if</span> (C[i]!=i+i)</span><br><span class="line">			&#123;</span><br><span class="line">				result = <span class="keyword">false</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (result)</span><br><span class="line">		&#123;</span><br><span class="line">			std::<span class="built_in">cout</span>&lt;&lt;<span class="string">"Success!"</span>&lt;&lt;std::endl;</span><br><span class="line">		&#125; </span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;</span><br><span class="line">			std::<span class="built_in">cout</span>&lt;&lt;<span class="string">"Failed!"</span>&lt;&lt;std::endl;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;<span class="keyword">catch</span>(cl::Error error)&#123;</span><br><span class="line">		std::<span class="built_in">cout</span>&lt;&lt;error.what()&lt;&lt;<span class="string">"("</span>&lt;&lt;error.err()&lt;&lt;<span class="string">")"</span>&lt;&lt;std::endl;</span><br><span class="line">	&#125;</span><br><span class="line">	system(<span class="string">"pause"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <!-- <a data-url="http://gameeer.com/2015/01/11/opencl-vecadd-cpp/" data-id="ci78m04q2000vbmzfimftvmlh" class="article-share-link">Share</a> -->
+      
+        <a href="http://gameeer.com/2015/01/11/opencl-vecadd-cpp/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenCL/">OpenCL</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/01/10/opencl-vecadd-c/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">OpenCL初探:向量相加(C)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+<div id="disqus_thread" >
+<div class="ds-thread" data-thread-key="2015/01/11/opencl-vecadd-cpp/" data-title="OpenCL初探:向量相加(C++)" data-url="http://gameeer.com/2015/01/11/opencl-vecadd-cpp/">
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"gameeer"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- 多说公共JS代码 end -->
+</div>
+</div>
+</section>
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 <a href="https://github.com/cuit-zhaxin/hexo-theme-athena" target="_blank">Athena
+</a> improved by <a href="http://gameeer.com/">Gameeer</a> | Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> | 蜀ICP备14005212号-2
+    </div>
+  </div>
+</footer>
+    </div>
+    <script src="http://ajax.useso.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+<!-- http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js-->
+
+  </div>
+</body>
+</html>
